@@ -40,11 +40,13 @@ html{scroll-behavior:smooth;}
   .mh-root *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
 }
 
-.mh-cursor{position:fixed; top:0; left:0; width:8px; height:8px; border-radius:50%; background:var(--signal); pointer-events:none; z-index:200; transform:translate(-50%,-50%); transition:width .15s, height .15s, background .15s; will-change:left,top;}
-.mh-cursor-ring{position:fixed; top:0; left:0; width:36px; height:36px; border-radius:50%; border:1px solid var(--ink); pointer-events:none; z-index:199; transform:translate(-50%,-50%); transition:width .2s, height .2s, border-color .2s, opacity .2s; will-change:left,top;}
+.mh-cursor{position:fixed; top:0; left:0; width:8px; height:8px; border-radius:50%; background:var(--signal); pointer-events:none; z-index:200; opacity:0; transition:width .15s, height .15s, background .15s, opacity .2s; will-change:transform;}
+.mh-cursor.ready{opacity:1;}
+.mh-cursor-ring{position:fixed; top:0; left:0; width:36px; height:36px; border-radius:50%; border:1px solid var(--ink); pointer-events:none; z-index:199; opacity:0; transition:width .2s, height .2s, border-color .2s, opacity .2s; will-change:transform;}
+.mh-cursor-ring.ready{opacity:1;}
 .mh-cursor.active{width:12px; height:12px; background:var(--ink);}
-.mh-cursor-ring.active{width:56px; height:56px; border-color:var(--signal); opacity:.4;}
-.mh-cursor-label{position:fixed; top:0; left:0; pointer-events:none; z-index:202; font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink); background:var(--paper); border:1px solid var(--ink); padding:4px 10px; transform:translate(18px,-50%); white-space:nowrap; opacity:0; transition:opacity .15s; will-change:left,top;}
+.mh-cursor-ring.active{width:56px; height:56px; border-color:var(--signal); opacity:.4 !important;}
+.mh-cursor-label{position:fixed; top:0; left:0; pointer-events:none; z-index:202; font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink); background:var(--paper); border:1px solid var(--ink); padding:4px 10px; white-space:nowrap; opacity:0; transition:opacity .15s; will-change:transform;}
 .mh-cursor-label.show{opacity:1;}
 
 .mh-webgl{position:absolute; top:0; left:0; width:100%; height:100%; z-index:0;}
@@ -244,16 +246,24 @@ function useMagneticCursor() {
     const onMove = (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      if (dot) { dot.style.left = mouseX + "px"; dot.style.top = mouseY + "px"; }
-      if (label) { label.style.left = mouseX + "px"; label.style.top = mouseY + "px"; }
+      if (dot) {
+        dot.style.transform = `translate3d(${mouseX - 4}px,${mouseY - 4}px,0)`;
+        dot.classList.add("ready");
+      }
+      if (label) {
+        label.style.transform = `translate3d(${mouseX + 16}px,${mouseY - 8}px,0)`;
+      }
+      ring && ring.classList.add("ready");
     };
     window.addEventListener("mousemove", onMove);
 
     let raf;
     const loop = () => {
-      ringX += (mouseX - ringX) * 0.12;
-      ringY += (mouseY - ringY) * 0.12;
-      if (ring) { ring.style.left = ringX + "px"; ring.style.top = ringY + "px"; }
+      ringX += (mouseX - ringX) * 0.1;
+      ringY += (mouseY - ringY) * 0.1;
+      if (ring) {
+        ring.style.transform = `translate3d(${ringX - 18}px,${ringY - 18}px,0)`;
+      }
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
