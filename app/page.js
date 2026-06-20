@@ -40,13 +40,11 @@ html{scroll-behavior:smooth;}
   .mh-root *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
 }
 
-.mh-cursor{position:fixed; top:0; left:0; width:8px; height:8px; border-radius:50%; background:var(--signal); pointer-events:none; z-index:200; opacity:0; transition:width .15s, height .15s, background .15s, opacity .2s; will-change:transform;}
-.mh-cursor.ready{opacity:1;}
-.mh-cursor-ring{position:fixed; top:0; left:0; width:36px; height:36px; border-radius:50%; border:1px solid var(--ink); pointer-events:none; z-index:199; opacity:0; transition:width .2s, height .2s, border-color .2s, opacity .2s; will-change:transform;}
-.mh-cursor-ring.ready{opacity:1;}
+.mh-cursor{position:fixed; top:-20px; left:-20px; width:8px; height:8px; border-radius:50%; background:var(--signal); pointer-events:none; z-index:200; transition:width .15s, height .15s, background .15s; will-change:transform;}
+.mh-cursor-ring{position:fixed; top:-40px; left:-40px; width:36px; height:36px; border-radius:50%; border:1px solid var(--ink); pointer-events:none; z-index:199; transition:width .2s, height .2s, border-color .2s; will-change:transform;}
 .mh-cursor.active{width:12px; height:12px; background:var(--ink);}
-.mh-cursor-ring.active{width:56px; height:56px; border-color:var(--signal); opacity:.4 !important;}
-.mh-cursor-label{position:fixed; top:0; left:0; pointer-events:none; z-index:202; font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink); background:var(--paper); border:1px solid var(--ink); padding:4px 10px; white-space:nowrap; opacity:0; transition:opacity .15s; will-change:transform;}
+.mh-cursor-ring.active{width:56px; height:56px; border-color:var(--signal); opacity:.4;}
+.mh-cursor-label{position:fixed; top:-20px; left:-20px; pointer-events:none; z-index:202; font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink); background:var(--paper); border:1px solid var(--ink); padding:4px 10px; white-space:nowrap; opacity:0; transition:opacity .15s; will-change:transform;}
 .mh-cursor-label.show{opacity:1;}
 
 .mh-webgl{position:absolute; top:0; left:0; width:100%; height:100%; z-index:0;}
@@ -241,19 +239,13 @@ function useMagneticCursor() {
     const dot = dotRef.current;
     const ring = ringRef.current;
     const label = labelRef.current;
-    let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+    let mouseX = -20, mouseY = -20, ringX = -20, ringY = -20;
 
     const onMove = (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      if (dot) {
-        dot.style.transform = `translate3d(${mouseX - 4}px,${mouseY - 4}px,0)`;
-        dot.classList.add("ready");
-      }
-      if (label) {
-        label.style.transform = `translate3d(${mouseX + 16}px,${mouseY - 8}px,0)`;
-      }
-      ring && ring.classList.add("ready");
+      if (dot) dot.style.transform = `translate3d(${mouseX - 4}px,${mouseY - 4}px,0)`;
+      if (label) label.style.transform = `translate3d(${mouseX + 16}px,${mouseY - 8}px,0)`;
     };
     window.addEventListener("mousemove", onMove);
 
