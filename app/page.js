@@ -68,8 +68,8 @@ header.mh-header{position:sticky; top:0; z-index:90; background:rgba(250,250,248
 
 .mh-btn{font-family:var(--mono); font-weight:700; font-size:13px; border:1px solid var(--ink); cursor:none; border-radius:0; padding:13px 24px; display:inline-flex; align-items:center; gap:9px; background:transparent; transition:background .2s, color .2s;}
 .mh-btn:hover{background:var(--ink); color:var(--paper);}
-.mh-btn-solid{background:var(--ink); color:var(--paper);}
-.mh-btn-solid:hover{background:var(--signal); border-color:var(--signal); color:var(--paper);}
+.mh-btn-solid{background:var(--signal); border-color:var(--signal); color:var(--paper);}
+.mh-btn-solid:hover{background:var(--signal-deep); border-color:var(--signal-deep); color:var(--paper);}
 
 .mh-hero{position:relative; min-height:92vh; display:flex; flex-direction:column; justify-content:center; padding:60px 0 80px; overflow:hidden;}
 .mh-hero-inner{position:relative; z-index:2; display:grid; grid-template-columns:1fr 340px; gap:48px; align-items:center;}
