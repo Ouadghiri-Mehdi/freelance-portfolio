@@ -40,10 +40,12 @@ html{scroll-behavior:smooth;}
   .mh-root *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
 }
 
-.mh-cursor{position:fixed; top:0; left:0; width:8px; height:8px; border-radius:50%; background:var(--signal); pointer-events:none; z-index:200; transform:translate(-50%,-50%); transition:width .2s, height .2s, background .2s;}
-.mh-cursor-ring{position:fixed; top:0; left:0; width:36px; height:36px; border-radius:50%; border:1px solid var(--ink); pointer-events:none; z-index:199; transform:translate(-50%,-50%); transition:width .25s, height .25s, border-color .25s, opacity .25s;}
-.mh-cursor.active{width:14px; height:14px; background:var(--ink);}
-.mh-cursor-ring.active{width:64px; height:64px; border-color:var(--signal); opacity:.5;}
+.mh-cursor{position:fixed; top:0; left:0; width:8px; height:8px; border-radius:50%; background:var(--signal); pointer-events:none; z-index:200; transform:translate(-50%,-50%); transition:width .15s, height .15s, background .15s; will-change:left,top;}
+.mh-cursor-ring{position:fixed; top:0; left:0; width:36px; height:36px; border-radius:50%; border:1px solid var(--ink); pointer-events:none; z-index:199; transform:translate(-50%,-50%); transition:width .2s, height .2s, border-color .2s, opacity .2s; will-change:left,top;}
+.mh-cursor.active{width:12px; height:12px; background:var(--ink);}
+.mh-cursor-ring.active{width:56px; height:56px; border-color:var(--signal); opacity:.4;}
+.mh-cursor-label{position:fixed; top:0; left:0; pointer-events:none; z-index:202; font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink); background:var(--paper); border:1px solid var(--ink); padding:4px 10px; transform:translate(18px,-50%); white-space:nowrap; opacity:0; transition:opacity .15s; will-change:left,top;}
+.mh-cursor-label.show{opacity:1;}
 
 .mh-webgl{position:absolute; top:0; left:0; width:100%; height:100%; z-index:0;}
 
@@ -231,34 +233,48 @@ function Reveal({ children, className = "" }) {
 function useMagneticCursor() {
   const dotRef = useRef(null);
   const ringRef = useRef(null);
+  const labelRef = useRef(null);
   useEffect(() => {
     if (window.matchMedia && !window.matchMedia("(pointer:fine)").matches) return;
     const dot = dotRef.current;
     const ring = ringRef.current;
+    const label = labelRef.current;
     let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
     const onMove = (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      if (dot) {
-        dot.style.left = mouseX + "px";
-        dot.style.top = mouseY + "px";
-      }
+      if (dot) { dot.style.left = mouseX + "px"; dot.style.top = mouseY + "px"; }
+      if (label) { label.style.left = mouseX + "px"; label.style.top = mouseY + "px"; }
     };
     window.addEventListener("mousemove", onMove);
 
     let raf;
     const loop = () => {
-      ringX += (mouseX - ringX) * 0.18;
-      ringY += (mouseY - ringY) * 0.18;
-      if (ring) {
-        ring.style.left = ringX + "px";
-        ring.style.top = ringY + "px";
-      }
+      ringX += (mouseX - ringX) * 0.12;
+      ringY += (mouseY - ringY) * 0.12;
+      if (ring) { ring.style.left = ringX + "px"; ring.style.top = ringY + "px"; }
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
 
+    const setLabel = (text) => {
+      if (!label) return;
+      if (text) {
+        label.textContent = text;
+        label.classList.add("show");
+      } else {
+        label.classList.remove("show");
+      }
+    };
+
     const onOver = (e) => {
+      const project = e.target.closest(".mh-project");
+      const photo = e.target.closest(".mh-hero-photo");
+      if (project) setLabel("Voir →");
+      else if (photo) setLabel("Volta");
+      else setLabel(null);
+
       if (e.target.closest("a, button, .magnetic")) {
         dot && dot.classList.add("active");
         ring && ring.classList.add("active");
@@ -268,6 +284,9 @@ function useMagneticCursor() {
       if (e.target.closest("a, button, .magnetic")) {
         dot && dot.classList.remove("active");
         ring && ring.classList.remove("active");
+      }
+      if (!e.relatedTarget || (!e.relatedTarget.closest(".mh-project") && !e.relatedTarget.closest(".mh-hero-photo"))) {
+        setLabel(null);
       }
     };
     document.addEventListener("mouseover", onOver);
@@ -280,7 +299,7 @@ function useMagneticCursor() {
       cancelAnimationFrame(raf);
     };
   }, []);
-  return { dotRef, ringRef };
+  return { dotRef, ringRef, labelRef };
 }
 
 // ── Boutons magnétiques ─────────────────────────────────────────────────
@@ -423,7 +442,7 @@ function NetworkBackground() {
   return <div ref={mountRef} className="mh-webgl" aria-hidden="true" />;
 }
 
-// ── Formulaire de contact (mailto) ──────────────────────────────────────
+// ── Formulaire de contact (FormSubmit) ──────────────────────────────────
 const CONTACT_EMAIL = "ouadghirielmehdi4@gmail.com";
 
 function ContactForm() {
@@ -431,37 +450,41 @@ function ContactForm() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState({});
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState("idle"); // idle | loading | success | error
 
   function validate() {
     const e = {};
-    if (!name.trim()) e.name = "Indique ton nom.";
+    if (!name.trim()) e.name = "Indique votre nom.";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Email invalide.";
-    if (!message.trim()) e.message = "Un mot sur le projet.";
+    if (!message.trim()) e.message = "Un mot sur votre projet.";
     return e;
   }
 
-  function handleSubmit(ev) {
+  async function handleSubmit(ev) {
     ev.preventDefault();
     const e = validate();
     setErrors(e);
     if (Object.keys(e).length > 0) return;
-    const subject = encodeURIComponent(`Portfolio — message de ${name}`);
-    const body = encodeURIComponent(`Nom : ${name}\nEmail : ${email}\n\n${message}`);
-    window.open(`mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`);
-    setSent(true);
+    setStatus("loading");
+    try {
+      const res = await fetch(`https://formsubmit.co/ajax/${CONTACT_EMAIL}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ name, email, message, _subject: `Volta — message de ${name}` }),
+      });
+      if (!res.ok) throw new Error();
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    }
   }
 
-  if (sent) {
+  if (status === "success") {
     return (
       <div className="mh-success">
         <div className="check">✓</div>
-        <h3 style={{ fontFamily: "var(--display)", fontWeight: 700, fontSize: 19 }}>
-          Client mail ouvert.
-        </h3>
-        <p style={{ fontSize: 13.5, color: "var(--ink-soft)" }}>
-          Envoie le message depuis ta boîte — je réponds sous 24h.
-        </p>
+        <h3 style={{ fontFamily: "var(--display)", fontWeight: 700, fontSize: 19 }}>Message envoyé.</h3>
+        <p style={{ fontSize: 13.5, color: "var(--ink-soft)" }}>Réponse sous 24h.</p>
       </div>
     );
   }
@@ -499,9 +522,21 @@ function ContactForm() {
         />
         {errors.message && <div className="err">{errors.message}</div>}
       </div>
-      <button type="submit" className="mh-btn mh-btn-solid mh-submit magnetic">
-        Envoyer →
+      <button
+        type="submit"
+        className="mh-btn mh-btn-solid mh-submit magnetic"
+        disabled={status === "loading"}
+      >
+        {status === "loading" ? "Envoi en cours..." : "Envoyer →"}
       </button>
+      {status === "error" && (
+        <div className="mh-status">
+          Problème d&apos;envoi — écris directement à{" "}
+          <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: "var(--signal-deep)" }}>
+            {CONTACT_EMAIL}
+          </a>
+        </div>
+      )}
     </form>
   );
 }
@@ -528,7 +563,7 @@ export default function MehdiPortfolio() {
   const rootRef = useRef(null);
   const [scrollPct, setScrollPct] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { dotRef, ringRef } = useMagneticCursor();
+  const { dotRef, ringRef, labelRef } = useMagneticCursor();
   useMagnetic(rootRef);
 
   useEffect(() => {
@@ -586,6 +621,7 @@ export default function MehdiPortfolio() {
       {FONT_LINKS}
       <div className="mh-cursor" ref={dotRef} />
       <div className="mh-cursor-ring" ref={ringRef} />
+      <div className="mh-cursor-label" ref={labelRef} />
 
       {/* Menu mobile overlay */}
       <nav className={`mh-mobile-nav ${mobileOpen ? "open" : ""}`} aria-label="Navigation mobile">
@@ -685,7 +721,7 @@ export default function MehdiPortfolio() {
             <SplitReveal
               as="p"
               className="mh-manifesto"
-              text="Produit avant le code. Automatiser avant de recruter. Des actifs qui durent — pas des solutions jetables. Du prototype fonctionnel en jours, pas en mois."
+              text="On construit ce qui rapporte, pas ce qui impressionne. On automatise avant d'embaucher. On livre en jours — parce qu'une idée qui attend ne rapporte rien."
             />
           </div>
         </section>
