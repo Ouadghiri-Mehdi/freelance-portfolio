@@ -40,11 +40,9 @@ html{scroll-behavior:smooth;}
   .mh-root *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
 }
 
-.mh-cursor{position:fixed; top:-20px; left:-20px; width:8px; height:8px; border-radius:50%; background:var(--signal); pointer-events:none; z-index:200; transition:width .15s, height .15s, background .15s; will-change:transform;}
-.mh-cursor-ring{position:fixed; top:-40px; left:-40px; width:36px; height:36px; border-radius:50%; border:1px solid var(--ink); pointer-events:none; z-index:199; transition:width .2s, height .2s, border-color .2s; will-change:transform;}
-.mh-cursor.active{width:12px; height:12px; background:var(--ink);}
-.mh-cursor-ring.active{width:56px; height:56px; border-color:var(--signal); opacity:.4;}
-.mh-cursor-label{position:fixed; top:-20px; left:-20px; pointer-events:none; z-index:202; font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink); background:var(--paper); border:1px solid var(--ink); padding:4px 10px; white-space:nowrap; opacity:0; transition:opacity .15s; will-change:transform;}
+.mh-cursor{position:fixed; top:-20px; left:-20px; width:7px; height:7px; border-radius:50%; background:var(--signal); pointer-events:none; z-index:200; will-change:transform;}
+.mh-cursor-ring{display:none;}
+.mh-cursor-label{position:fixed; top:-20px; left:-20px; pointer-events:none; z-index:202; font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink); background:var(--paper); border:1px solid var(--line); padding:3px 9px; white-space:nowrap; opacity:0; transition:opacity .15s; will-change:transform;}
 .mh-cursor-label.show{opacity:1;}
 
 .mh-webgl{position:absolute; top:0; left:0; width:100%; height:100%; z-index:0;}
@@ -143,6 +141,16 @@ h2.mh-h2{font-family:var(--display); font-weight:700; font-size:clamp(30px,4.5vw
 .mh-badge-progress{background:#fff3d4; color:#7a5000; border:1px solid #f0d070;}
 .mh-badge-concept{background:#ede9ff; color:#4a2fa0; border:1px solid #c2b8f0;}
 
+.mh-offres{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line);}
+.mh-offre{background:var(--paper); padding:36px; transition:background .25s; position:relative;}
+.mh-offre:hover{background:var(--paper-2);}
+.mh-offre .on{font-family:var(--mono); font-size:11px; color:var(--signal-deep); letter-spacing:.1em; text-transform:uppercase; margin-bottom:16px;}
+.mh-offre h3{font-family:var(--display); font-weight:700; font-size:20px; margin-bottom:10px;}
+.mh-offre p{font-size:13.5px; color:var(--ink-soft); line-height:1.55;}
+.mh-offre .od{font-family:var(--mono); font-size:11px; color:var(--ink-soft); margin-top:20px; border-top:1px solid var(--line); padding-top:14px;}
+.mh-offre-tag{display:inline-block; font-family:var(--mono); font-size:10px; border:1px solid var(--signal); color:var(--signal-deep); padding:3px 9px; margin-bottom:16px;}
+@media(max-width:980px){.mh-offres{grid-template-columns:1fr;}}
+
 .mh-approach{display:grid; grid-template-columns:repeat(4,1fr); gap:0;}
 .mh-ap-step{border-top:2px solid var(--ink); padding-top:20px; padding-right:20px; transition:border-color .3s;}
 .mh-ap-step:hover{border-color:var(--signal);}
@@ -229,7 +237,7 @@ function Reveal({ children, className = "" }) {
   );
 }
 
-// ── Curseur magnétique ──────────────────────────────────────────────────
+// ── Curseur simple ──────────────────────────────────────────────────────
 function useMagneticCursor() {
   const dotRef = useRef(null);
   const ringRef = useRef(null);
@@ -237,68 +245,30 @@ function useMagneticCursor() {
   useEffect(() => {
     if (window.matchMedia && !window.matchMedia("(pointer:fine)").matches) return;
     const dot = dotRef.current;
-    const ring = ringRef.current;
     const label = labelRef.current;
-    let mouseX = -20, mouseY = -20, ringX = -20, ringY = -20;
 
     const onMove = (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      if (dot) dot.style.transform = `translate3d(${mouseX - 4}px,${mouseY - 4}px,0)`;
-      if (label) label.style.transform = `translate3d(${mouseX + 16}px,${mouseY - 8}px,0)`;
+      if (dot) dot.style.transform = `translate3d(${e.clientX - 3}px,${e.clientY - 3}px,0)`;
+      if (label) label.style.transform = `translate3d(${e.clientX + 14}px,${e.clientY - 8}px,0)`;
     };
     window.addEventListener("mousemove", onMove);
 
-    let raf;
-    const loop = () => {
-      ringX += (mouseX - ringX) * 0.1;
-      ringY += (mouseY - ringY) * 0.1;
-      if (ring) {
-        ring.style.transform = `translate3d(${ringX - 18}px,${ringY - 18}px,0)`;
-      }
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-
     const setLabel = (text) => {
       if (!label) return;
-      if (text) {
-        label.textContent = text;
-        label.classList.add("show");
-      } else {
-        label.classList.remove("show");
-      }
+      label.textContent = text || "";
+      label.classList.toggle("show", !!text);
     };
 
     const onOver = (e) => {
-      const project = e.target.closest(".mh-project");
-      const photo = e.target.closest(".mh-hero-photo");
-      if (project) setLabel("Voir →");
-      else if (photo) setLabel("Volta");
+      if (e.target.closest(".mh-project")) setLabel("Voir →");
+      else if (e.target.closest(".mh-hero-photo")) setLabel("Volta");
       else setLabel(null);
-
-      if (e.target.closest("a, button, .magnetic")) {
-        dot && dot.classList.add("active");
-        ring && ring.classList.add("active");
-      }
-    };
-    const onOut = (e) => {
-      if (e.target.closest("a, button, .magnetic")) {
-        dot && dot.classList.remove("active");
-        ring && ring.classList.remove("active");
-      }
-      if (!e.relatedTarget || (!e.relatedTarget.closest(".mh-project") && !e.relatedTarget.closest(".mh-hero-photo"))) {
-        setLabel(null);
-      }
     };
     document.addEventListener("mouseover", onOver);
-    document.addEventListener("mouseout", onOut);
 
     return () => {
       window.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseover", onOver);
-      document.removeEventListener("mouseout", onOut);
-      cancelAnimationFrame(raf);
     };
   }, []);
   return { dotRef, ringRef, labelRef };
@@ -589,6 +559,7 @@ export default function MehdiPortfolio() {
       title: "Trame",
       status: "EN COURS",
       desc: "Copilote de décision IA — agents connectés qui relient les données dispersées d'une entreprise pour appuyer chaque décision.",
+      result: "Objectif : zéro réunion de consolidation. Chaque décision, appuyée par les données en temps réel.",
       flagship: true,
     },
     {
@@ -596,18 +567,21 @@ export default function MehdiPortfolio() {
       title: "Fiabilité industrielle",
       status: "LIVRÉ",
       desc: "Plateforme d'analyse de pannes — logique bayésienne, RCA automatisé, recherche documentaire augmentée (RAG).",
+      result: "Diagnostic de pannes passé de plusieurs heures à quelques minutes. Équipe libérée de l'analyse manuelle.",
     },
     {
       yr: "2025",
       title: "Commerce cross-border",
       status: "LIVRÉ",
       desc: "App mobile e-commerce pour le marché mauritanien — React Native, paiements locaux (Bankily, Masrvi).",
+      result: "Premier produit e-commerce adapté aux contraintes locales — paiements, logistique, langue.",
     },
     {
       yr: "2024",
       title: "Suite d'automatisation académique",
       status: "LIVRÉ",
       desc: "Outils internes pour la gestion académique — Python, Streamlit, Power BI, Microsoft Graph API.",
+      result: "Reporting hebdomadaire entièrement automatisé — heures de saisie manuelle supprimées chaque semaine.",
     },
   ];
 
@@ -783,10 +757,47 @@ export default function MehdiPortfolio() {
                         {p.flagship && <span className="mh-flagship">PROJET PHARE</span>}
                       </h3>
                       <p>{p.desc}</p>
+                      {p.result && (
+                        <p style={{ fontFamily: "var(--mono)", fontSize: 11.5, color: "var(--signal-deep)", marginTop: 8, borderLeft: "2px solid var(--signal)", paddingLeft: 10 }}>
+                          {p.result}
+                        </p>
+                      )}
                     </div>
                     <div className="go">voir →</div>
                   </div>
                 ))}
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        <section className="mh-section">
+          <div className="mh-wrap">
+            <Reveal className="mh-section-head">
+              <p className="mh-eyebrow">Comment on travaille</p>
+              <h2 className="mh-h2">Choisissez comment démarrer.</h2>
+            </Reveal>
+            <Reveal>
+              <div className="mh-offres">
+                <div className="mh-offre">
+                  <span className="mh-offre-tag">LE PLUS DEMANDÉ</span>
+                  <div className="on">01 — Forfait MVP</div>
+                  <h3>Idée → produit en 4 à 6 semaines</h3>
+                  <p>On cadre ensemble le scope minimal viable, on build, on livre. Vous repartez avec un produit qui tourne — pas une maquette.</p>
+                  <div className="od">DISCOVERY · DESIGN · DEV · LIVRAISON</div>
+                </div>
+                <div className="mh-offre">
+                  <div className="on">02 — Automatisation</div>
+                  <h3>Vos tâches répétitives, supprimées</h3>
+                  <p>Audit de vos process, identification des gains, mise en place des automatisations. Ce qui se fait à la main aujourd'hui tourne seul demain.</p>
+                  <div className="od">AUDIT · MISE EN PLACE · MAINTENANCE</div>
+                </div>
+                <div className="mh-offre">
+                  <div className="on">03 — Conseil ponctuel</div>
+                  <h3>Une heure pour poser les bases</h3>
+                  <p>Vous avez une idée ou un problème. On se parle 30 à 60 minutes, vous repartez avec un plan d'action clair et une stack recommandée.</p>
+                  <div className="od">ARCHITECTURE · STACK · ROADMAP</div>
+                </div>
               </div>
             </Reveal>
           </div>
