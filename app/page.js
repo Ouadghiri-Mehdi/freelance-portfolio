@@ -704,7 +704,7 @@ export default function MehdiPortfolio() {
             <SplitReveal
               as="p"
               className="mh-manifesto"
-              text="Le temps est la seule ressource que l'on ne peut pas créer. Nous construisons des systèmes capables d'exécuter en quelques minutes ce qui prend aujourd'hui des jours aux équipes. Non pour remplacer les humains — pour leur rendre du temps."
+              text="Chaque organisation possède des connaissances, des processus et des ambitions. Ce qui manque souvent, c'est la capacité de les transformer rapidement en exécution. C'est sur ce problème que nous construisons Praxis."
             />
             <div className="mh-vision">
               <Reveal className="mh-vision-item">
