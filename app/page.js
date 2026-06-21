@@ -107,6 +107,12 @@ header.mh-header{position:sticky; top:0; z-index:90; background:rgba(250,250,248
 .mh-fade{opacity:0; transform:translateY(20px); transition:opacity .6s ease, transform .6s ease;}
 .mh-fade.in{opacity:1; transform:translateY(0);}
 
+.mh-vision{display:grid; grid-template-columns:repeat(3,1fr); gap:48px; padding:80px 0;}
+.mh-vision-item .vi-label{font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--signal-deep); display:inline-flex; align-items:center; gap:10px; margin-bottom:20px;}
+.mh-vision-item .vi-label::before{content:''; width:18px; height:1px; background:var(--signal); display:inline-block;}
+.mh-vision-item p{font-family:var(--display); font-weight:500; font-size:clamp(17px,1.8vw,22px); line-height:1.5; color:var(--ink);}
+@media(max-width:980px){.mh-vision{grid-template-columns:1fr; gap:32px; padding:48px 0;}}
+
 .mh-section{padding:120px 0; position:relative; border-top:1px solid var(--line);}
 .mh-section-head{max-width:680px; margin-bottom:54px;}
 h2.mh-h2{font-family:var(--display); font-weight:700; font-size:clamp(30px,4.5vw,48px); line-height:1.08; letter-spacing:-0.01em;}
@@ -261,7 +267,7 @@ function useMagneticCursor() {
 
     const onOver = (e) => {
       if (e.target.closest(".mh-project")) setLabel("Voir →");
-      else if (e.target.closest(".mh-hero-photo")) setLabel("Volta");
+      else if (e.target.closest(".mh-hero-photo")) setLabel("Praxis");
       else setLabel(null);
     };
     document.addEventListener("mouseover", onOver);
@@ -602,8 +608,8 @@ export default function MehdiPortfolio() {
       {/* Menu mobile overlay */}
       <nav className={`mh-mobile-nav ${mobileOpen ? "open" : ""}`} aria-label="Navigation mobile">
         <button className="mh-mobile-close" onClick={closeMenu} aria-label="Fermer">✕</button>
-        <a href="#approche" onClick={closeMenu}>Approche</a>
-        <a href="#services" onClick={closeMenu}>Services</a>
+        <a href="#vision" onClick={closeMenu}>Vision</a>
+        <a href="#systemes" onClick={closeMenu}>Systèmes</a>
         <a href="#projets" onClick={closeMenu}>Projets</a>
         <a href="#contact" onClick={closeMenu}>Contact</a>
       </nav>
@@ -614,10 +620,10 @@ export default function MehdiPortfolio() {
 
       <header className="mh-header">
         <nav className="mh-nav">
-          <a href="#" className="mh-brand">Volta.</a>
+          <a href="#" className="mh-brand">Praxis.</a>
           <ul className="mh-nav-links">
-            <li><a href="#approche">Approche</a></li>
-            <li><a href="#services">Services</a></li>
+            <li><a href="#vision">Vision</a></li>
+            <li><a href="#systemes">Systèmes</a></li>
             <li><a href="#projets">Projets</a></li>
             <li><a href="#contact">Contact</a></li>
           </ul>
@@ -637,18 +643,19 @@ export default function MehdiPortfolio() {
           <NetworkBackground />
           <div className="mh-wrap mh-hero-inner">
             <div className="mh-hero-text">
-              <p className="mh-kicker">Développement · Automatisation · IA appliquée</p>
+              <p className="mh-kicker">Execution Intelligence</p>
               <SplitReveal
                 as="h1"
                 className="mh-name"
-                text="Volta."
+                text="Praxis."
               />
               <p className="mh-role">
-                Votre produit digital, de l&apos;idée à la mise en ligne. Vos process répétitifs,
-                automatisés. Du résultat concret — sans recruter une équipe.
+                Nous croyons que le temps est la ressource la plus précieuse d&apos;une organisation.
+                Praxis construit des systèmes intelligents capables d&apos;exécuter en quelques minutes
+                ce qui demande aujourd&apos;hui des heures ou des jours de travail aux équipes.
               </p>
               <TagsReveal
-                tags={["Next.js / React / TypeScript", "n8n / Make / APIs IA", "Supabase / PostgreSQL"]}
+                tags={["Industrie · Logistique · Énergie", "Systèmes d'exécution intelligents", "Intelligence opérationnelle"]}
               />
               <div className="mh-cta-row">
                 <a href="#projets" className="mh-btn mh-btn-solid magnetic">Voir mes projets</a>
@@ -656,7 +663,7 @@ export default function MehdiPortfolio() {
               </div>
             </div>
             <div className="mh-hero-photo">
-              <img src="/mehdi.png" alt="Volta — Développement & Automatisation" />
+              <img src="/mehdi.png" alt="Praxis — Execution Intelligence" />
             </div>
           </div>
           <div className="mh-scroll-cue">
@@ -692,47 +699,61 @@ export default function MehdiPortfolio() {
           </div>
         </div>
 
-        <section className="mh-section" id="approche">
+        <section className="mh-section" id="vision">
           <div className="mh-wrap">
             <SplitReveal
               as="p"
               className="mh-manifesto"
-              text="On construit ce qui rapporte, pas ce qui impressionne. On automatise avant d'embaucher. On livre en jours — parce qu'une idée qui attend ne rapporte rien."
+              text="Le temps est la seule ressource que l'on ne peut pas créer. Nous construisons des systèmes capables d'exécuter en quelques minutes ce qui prend aujourd'hui des jours aux équipes. Non pour remplacer les humains — pour leur rendre du temps."
             />
+            <div className="mh-vision">
+              <Reveal className="mh-vision-item">
+                <div className="vi-label">Mission</div>
+                <p>Nous éliminons le temps que les organisations perdent à chercher, analyser et traiter l&apos;information manuellement.</p>
+              </Reveal>
+              <Reveal className="mh-vision-item">
+                <div className="vi-label">Vision</div>
+                <p>Un futur où l&apos;IA ne remplace pas les équipes mais absorbe ce qui leur prend des heures et des jours.</p>
+              </Reveal>
+              <Reveal className="mh-vision-item">
+                <div className="vi-label">Différenciation</div>
+                <p>Nous construisons des systèmes d&apos;exécution capables d&apos;orchestrer l&apos;information, les processus et les décisions à grande échelle. Les agents IA ne sont qu&apos;un composant de cette infrastructure.</p>
+              </Reveal>
+            </div>
           </div>
         </section>
 
-        <section className="mh-section" id="services">
+        <section className="mh-section" id="systemes">
           <div className="mh-wrap">
             <Reveal className="mh-section-head">
-              <p className="mh-eyebrow">Ce qu&apos;on livre</p>
-              <h2 className="mh-h2">Du code au système qui tourne seul.</h2>
+              <p className="mh-eyebrow">Systèmes d&apos;exécution</p>
+              <h2 className="mh-h2">Ce que nous construisons pour vous.</h2>
             </Reveal>
             <Reveal>
               <div className="mh-services">
                 <div className="mh-service">
                   <div className="sn">01</div>
-                  <h3>Développement web &amp; produit</h3>
-                  <p>Un MVP testable en quelques semaines. Une plateforme qui tient la charge en production. Votre idée prend forme — vite.</p>
-                  <div className="stack">NEXT.JS · REACT · TYPESCRIPT · SUPABASE</div>
+                  <h3>Exécution de l&apos;information</h3>
+                  <p>Ce qui prend des heures à vos équipes — chercher, consolider, produire — exécuté en quelques minutes par un système qui tourne en continu.</p>
+                  <div className="stack">AGENTS IA · RAG · ORCHESTRATION</div>
                 </div>
                 <div className="mh-service">
                   <div className="sn">02</div>
-                  <h3>Automatisation de workflows</h3>
-                  <p>Ce que vos équipes font à la main aujourd&apos;hui, tourne tout seul demain. Zéro ressaisie, zéro oubli.</p>
-                  <div className="stack">N8N · MAKE · ZAPIER · WHATSAPP API</div>
+                  <h3>Automatisation opérationnelle</h3>
+                  <p>Vos processus répétitifs connectés, coordonnés, automatisés. Zéro ressaisie, zéro délai, zéro dépendance humaine sur les tâches à faible valeur.</p>
+                  <div className="stack">N8N · MAKE · APIs · WEBHOOKS</div>
                 </div>
                 <div className="mh-service">
                   <div className="sn">03</div>
-                  <h3>IA appliquée</h3>
-                  <p>L&apos;IA branchée sur vos vraies données — pas une démo. Un copilote qui connaît votre métier.</p>
-                  <div className="stack">OPENAI API · CLAUDE API · RAG</div>
+                  <h3>Intelligence décisionnelle</h3>
+                  <p>Vos données transformées en recommandations actionnables. Des tableaux de bord qui lisent votre réalité — pas des métriques creuses.</p>
+                  <div className="stack">LLM · POWER BI · SUPABASE · PYTHON</div>
                 </div>
                 <div className="mh-service">
                   <div className="sn">04</div>
-                  <h3>Conseil &amp; exécution rapide</h3>
-                  <p>Une heure ensemble suffit pour poser le scope, choisir la stack, estimer le délai. On part vite.</p>
-                  <div className="stack">PRODUCT · ARCHITECTURE · MVP</div>
+                  <h3>Infrastructure IA sur mesure</h3>
+                  <p>Nous concevons et déployons l&apos;infrastructure complète — de l&apos;architecture à la mise en production. Des systèmes durables, pas des démos.</p>
+                  <div className="stack">NEXT.JS · REACT · TYPESCRIPT · CLOUD</div>
                 </div>
               </div>
             </Reveal>
@@ -766,38 +787,6 @@ export default function MehdiPortfolio() {
                     <div className="go">voir →</div>
                   </div>
                 ))}
-              </div>
-            </Reveal>
-          </div>
-        </section>
-
-        <section className="mh-section">
-          <div className="mh-wrap">
-            <Reveal className="mh-section-head">
-              <p className="mh-eyebrow">Comment on travaille</p>
-              <h2 className="mh-h2">Choisissez comment démarrer.</h2>
-            </Reveal>
-            <Reveal>
-              <div className="mh-offres">
-                <div className="mh-offre">
-                  <span className="mh-offre-tag">LE PLUS DEMANDÉ</span>
-                  <div className="on">01 — Forfait MVP</div>
-                  <h3>Idée → produit en 4 à 6 semaines</h3>
-                  <p>On cadre ensemble le scope minimal viable, on build, on livre. Vous repartez avec un produit qui tourne — pas une maquette.</p>
-                  <div className="od">DISCOVERY · DESIGN · DEV · LIVRAISON</div>
-                </div>
-                <div className="mh-offre">
-                  <div className="on">02 — Automatisation</div>
-                  <h3>Vos tâches répétitives, supprimées</h3>
-                  <p>Audit de vos process, identification des gains, mise en place des automatisations. Ce qui se fait à la main aujourd'hui tourne seul demain.</p>
-                  <div className="od">AUDIT · MISE EN PLACE · MAINTENANCE</div>
-                </div>
-                <div className="mh-offre">
-                  <div className="on">03 — Conseil ponctuel</div>
-                  <h3>Une heure pour poser les bases</h3>
-                  <p>Vous avez une idée ou un problème. On se parle 30 à 60 minutes, vous repartez avec un plan d'action clair et une stack recommandée.</p>
-                  <div className="od">ARCHITECTURE · STACK · ROADMAP</div>
-                </div>
               </div>
             </Reveal>
           </div>
@@ -853,7 +842,7 @@ export default function MehdiPortfolio() {
 
       <footer className="mh-footer">
         <div className="mh-wrap mh-foot-row">
-          <span>© 2026 Volta — Développement · Automatisation · IA appliquée</span>
+          <span>© 2026 Praxis — Execution Intelligence</span>
           <span style={{ display: "flex", gap: 20 }}>
             <a href={`mailto:${CONTACT_EMAIL}`} className="magnetic">Email</a>
             <a href="https://www.linkedin.com/in/ouadghiri-mehdi/" target="_blank" rel="noopener noreferrer" className="magnetic">LinkedIn</a>

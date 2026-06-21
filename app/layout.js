@@ -1,15 +1,16 @@
 export const metadata = {
-  title: "Volta — Développement, Automatisation & IA appliquée",
+  title: "Praxis — Execution Intelligence",
   description:
-    "Votre produit digital, de l'idée à la mise en ligne. Vos process répétitifs, automatisés. Du résultat concret — sans recruter une équipe.",
+    "Praxis construit des systèmes intelligents capables d'exécuter en quelques minutes ce qui demande aujourd'hui des heures ou des jours de travail aux équipes.",
   openGraph: {
-    title: "Volta — Développement, Automatisation & IA appliquée",
-    description: "MVP en quelques semaines. Workflows automatisés. IA branchée sur vos données réelles.",
+    title: "Praxis — Execution Intelligence",
+    description: "Des systèmes qui absorbent ce qui consomme le temps de vos équipes. Intelligence opérationnelle pour les organisations.",
     type: "website",
   },
   keywords: [
-    "développeur freelance", "automatisation", "IA appliquée", "Next.js",
-    "développeur Mauritanie", "studio digital", "MVP", "n8n", "Make", "RAG",
+    "execution intelligence", "systèmes d'exécution intelligents", "automatisation opérationnelle",
+    "intelligence artificielle", "Mauritanie", "industrie", "logistique", "énergie",
+    "orchestration des processus", "systèmes IA", "productivité organisation",
   ],
 };
 
